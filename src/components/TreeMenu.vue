@@ -17,10 +17,14 @@
         <tree-menu :MenuList="menu.children" />
       </el-submenu>
       <el-menu-item
-        v-else-if="menu.menuType == 1"
+        v-else-if="menu.menuType == 1 && menu.menuType == 1"
         :index="menu.path"
-        :key="menu._id"
-        >{{ menu.menuName }}</el-menu-item
+        :key="menu.menuName"
+      >
+        <template #title>
+          <el-icon> <component :is="menu.icon" /> </el-icon>
+          <span>{{ menu.menuName }}</span>
+        </template></el-menu-item
       >
     </template>
   </div>

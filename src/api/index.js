@@ -19,12 +19,12 @@ export default {
     });
   },
   noticeCount(params) {
-    // 待审批通知数量
+    // 待审批通知数量
     return request({
       url: "/leave/count",
       method: "get",
       data: {},
-      mock: true,
+      mock: false,
     });
   },
   getMenuList(params) {
@@ -139,6 +139,47 @@ export default {
     // 编辑/创建 - 菜单列表
     return request({
       url: "/menu/operate",
+      method: "post",
+      data: params,
+      mock: false,
+    });
+  },
+  // 审批管理
+  getApplyList(params) {
+    return request({
+      url: "/leave/list",
+      method: "get",
+      data: params,
+      mock: false,
+    });
+  },
+  leaveOperate(params) {
+    return request({
+      url: "/leave/operate",
+      method: "post",
+      data: params,
+      mock: false,
+    });
+  },
+  leaveApprove(params) {
+    return request({
+      url: "/leave/approve",
+      method: "post",
+      data: params,
+      mock: false,
+    });
+  },
+  getCaptcha(params) {
+    return request({
+      url: "/captcha/getCaptcha",
+      method: "get",
+      data: params,
+      mock: false,
+    });
+  },
+  verifyCaptcha(params) {
+    return request({
+      url: "/captcha/verifyCaptcha",
       method: "post",
       data: params,
       mock: false,

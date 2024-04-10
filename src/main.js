@@ -16,6 +16,7 @@ import api from "./api/index";
 import storage from "./utils/storage";
 import store from "./store/index";
 import keyBoard from "./utils/common";
+import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 
 // console.log("环境变量=>",import.meta.env)
 const app = createApp(App);
@@ -40,4 +41,8 @@ app.config.globalProperties.$request = request;
 app.config.globalProperties.$api = api;
 app.config.globalProperties.$storage = storage;
 app.config.globalProperties.$keyBoard = keyBoard;
-app.use(router).use(store).use(ElementPlus, { size: "small" }).mount("#app");
+// 注册全局图标
+for (let [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component);
+}
+app.use(router).use(store).use(ElementPlus).mount("#app");

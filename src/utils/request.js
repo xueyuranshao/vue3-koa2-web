@@ -30,7 +30,7 @@ service.interceptors.response.use((res) => {
   const { code, data, msg } = res.data;
   if (code === 200) {
     return data;
-  } else if (code === 50001) {
+  } else if (code === 500001) {
     ElMessage.error(TOKEN_INVALID);
     setTimeout(() => {
       router.push("/login");
@@ -54,6 +54,8 @@ function request(options) {
   if (typeof options.mock != "undefined") {
     // 局部mock
     isMock = options.mock;
+  } else {
+    isMock = config.mock;
   }
   if (config.env === "prod") {
     service.defaults.baseURL = config.baseApi;

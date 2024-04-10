@@ -23,7 +23,7 @@
         <!-- 展开隐藏+面包屑 -->
         <div class="Layout-right-top-bread">
           <div class="menu-fold" @click="toggle">
-            <i class="el-icon-s-fold"></i>
+            <el-icon><Fold /></el-icon>
           </div>
           <div class="bread">
             <BreadCrumb />
@@ -32,7 +32,7 @@
         <!-- 提示消息+角色选择 -->
         <div class="user-info">
           <el-badge :is-dot="noticeCount > 0 ? true : false" class="notice">
-            <i class="el-icon-bell"></i>
+            <el-icon> <Bell /> </el-icon>
           </el-badge>
           <el-dropdown @command="handleLogout" class="user-info-select">
             <span class="user-link">
@@ -175,6 +175,8 @@ export default {
         }
       }
       .user-info {
+        display: flex;
+        align-items: center;
         .notice {
           line-height: 30px;
           margin-right: 15px;

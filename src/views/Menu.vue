@@ -199,7 +199,7 @@ export default {
         menuType: 1,
         menuState: 1,
       },
-      action: "", // 区分编辑和新建
+      action: "", // 区分编辑和新建
       rules: {
         menuName: [
           {
