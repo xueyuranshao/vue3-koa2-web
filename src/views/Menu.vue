@@ -151,6 +151,7 @@ export default {
         {
           label: "图标",
           prop: "icon",
+          width: 100,
         },
         {
           label: "菜单类型",
@@ -169,6 +170,7 @@ export default {
         {
           label: "路由地址",
           prop: "path",
+          width: 180,
         },
         {
           label: "组件路径",
@@ -177,7 +179,7 @@ export default {
         {
           label: "菜单状态",
           prop: "menuState",
-          width: 90,
+          width: 80,
           formatter(row, column, value) {
             return {
               1: "正常",

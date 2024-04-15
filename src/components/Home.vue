@@ -3,8 +3,7 @@
     <div :class="['Layout-side', isCollapse ? 'fold' : 'unfold']">
       <!-- 系统logo -->
       <div class="log">
-        <img src="../assets/log2.jpeg" alt="" />
-        <span>-----</span>
+        <logPicture />
       </div>
       <!-- 导航菜单 el-submenu 父级 el-menu-item 子级-->
       <el-menu
@@ -46,6 +45,9 @@
                     >邮箱:{{ userInfo.userEmail }}</span
                   ></el-dropdown-item
                 >
+                <el-dropdown-item command="changePassword"
+                  ><span class="messageSpan">更改密码</span></el-dropdown-item
+                >
                 <el-dropdown-item command="logout"
                   ><span class="messageSpan">退出</span></el-dropdown-item
                 >
@@ -58,15 +60,62 @@
         <router-view></router-view>
       </div>
     </div>
+    <el-dialog title="更改密码" v-model="showModal">
+      <el-form
+        ref="dialogForm"
+        :model="userForm"
+        label-width="100px"
+        :rules="rules"
+      >
+        <el-form-item label="用户名" prop="userName">
+          <el-input
+            v-model="userForm.userName"
+            :disabled="true"
+            placeholder="请输入用户名称"
+          />
+        </el-form-item>
+        <el-form-item label="当前密码" prop="currentPassword">
+          <el-input
+            type="password"
+            v-model="userForm.currentPassword"
+            placeholder="请输入当前密码"
+            autocomplete="off"
+          >
+          </el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+          <div class="input-with-eye">
+            <el-input
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="请输入新密码"
+              v-model="userForm.newPassword"
+              autocomplete="off"
+            ></el-input>
+            <el-button
+              @click="showPassword = !showPassword"
+              size="small"
+              icon="el-icon-view"
+            ></el-button>
+          </div>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="handleClose">取 消</el-button>
+          <el-button type="primary" @click="handleSubmit">确 定</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import TreeMenu from "./TreeMenu.vue";
 import BreadCrumb from "./BreadCrumb.vue";
+import logPicture from "./logPicture.vue";
 export default {
   name: "Home",
-  components: { TreeMenu, BreadCrumb },
+  components: { TreeMenu, BreadCrumb, logPicture },
   data() {
     return {
       isCollapse: false,
@@ -74,6 +123,27 @@ export default {
       noticeCount: 0,
       menuList: [],
       activeMenu: location.hash.slice(1), // 获取浏览器地址#后面的
+      showModal: false,
+      userForm: {
+        userName: this.$store.state.userInfo.userName,
+        currentPassword: "",
+        newPassword: "",
+      },
+      rules: {
+        currentPassword: [
+          {
+            required: true,
+            message: "请输入密码",
+          },
+        ],
+        newPassword: [
+          {
+            required: true,
+            message: "请输入密码",
+          },
+        ],
+      },
+      showPassword: true,
     };
   },
   mounted() {
@@ -81,11 +151,32 @@ export default {
     this.getMenuList();
   },
   methods: {
+    // 更改用户密码
+    handleSubmit() {
+      this.$refs.dialogForm.validate(async (valid) => {
+        if (valid) {
+          let res = await this.$api.updatePwd(this.userForm);
+          if (res) {
+            this.$message.success("更新成功");
+            this.handleLogout("logout");
+          }
+        }
+      });
+    },
+    // 用户新增=取消/确定
+    handleClose() {
+      this.$refs["dialogForm"].resetFields();
+      this.showModal = false;
+    },
     toggle() {
       this.isCollapse = !this.isCollapse;
     },
     handleLogout(key) {
       if (key == "email") return;
+      if (key == "changePassword") {
+        this.showModal = true;
+        return;
+      }
       this.$store.commit("saveUserInfo", "");
       this.userInfo = {};
       this.$router.push("/login");
@@ -164,7 +255,7 @@ export default {
       line-height: 50px;
       display: flex;
       justify-content: space-between;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #cdc7c7;
       padding: 0 20px;
       &-bread {
         display: flex;
@@ -208,5 +299,9 @@ export default {
       }
     }
   }
+}
+.input-with-eye {
+  display: flex;
+  align-items: center;
 }
 </style>

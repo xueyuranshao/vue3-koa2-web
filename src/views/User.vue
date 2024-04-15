@@ -73,6 +73,14 @@
             placeholder="请输入用户名称"
           />
         </el-form-item>
+        <!-- <el-form-item label="密码" prop="userPwd">
+          <el-input
+            :disable="action == 'edit'"
+            v-model="userForm.userPwd"
+            :disabled="action == 'edit'"
+            placeholder="请输入用户密码"
+          />
+        </el-form-item> -->
         <el-form-item label="邮箱" prop="userEmail">
           <el-input
             :disable="action == 'edit'"

@@ -1,8 +1,8 @@
 <template>
   <div class="login-wrapper">
+    <div class="title">基于Vue3的企业后台管理系统的设计与实现</div>
     <div class="modal">
       <el-form ref="userFormRef" :model="user" status-icon :rules="rules">
-        <div class="title">基于Vue3的企业后台管理系统的设计与实现</div>
         <el-form-item prop="userName">
           <el-input
             type="text"
@@ -52,8 +52,8 @@ import { onMounted, getCurrentInstance } from "vue";
 import api from "@/api";
 const { proxy } = getCurrentInstance();
 let user = reactive({
-  userName: "admin",
-  userPwd: "123456",
+  userName: "",
+  userPwd: "",
   captcha: "",
 });
 let rules = {
@@ -113,23 +113,25 @@ async function refreshCaptcha() {
 <style lang="scss">
 .login-wrapper {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #f9fcff;
   width: 100vw;
   height: 100vh;
+  .title {
+    font-size: 50px;
+    line-height: 1.5;
+    text-align: center;
+    margin-bottom: 30px;
+  }
   .modal {
     width: 500px;
     padding: 50px;
     background-color: #fff;
     border-radius: 4px;
-    box-shadow: 0px 0px 10px 3px #c7c9cb4d;
-    .title {
-      font-size: 50px;
-      line-height: 1.5;
-      text-align: center;
-      margin-bottom: 30px;
-    }
+    box-shadow: 0px 0px 10px 3px #3031314d;
+
     .btn-login {
       width: 100%;
     }

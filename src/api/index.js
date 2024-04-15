@@ -72,6 +72,15 @@ export default {
       mock: false,
     });
   },
+  updatePwd(params) {
+    // 更新用户密码
+    return request({
+      url: "/users/updatePwd",
+      method: "post",
+      data: params,
+      mock: false,
+    });
+  },
   getRoleAllList() {
     // 角色名称列表(全部)
     return request({

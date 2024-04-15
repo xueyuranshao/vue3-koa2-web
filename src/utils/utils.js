@@ -45,15 +45,26 @@ export default {
         let item = list.pop();
         if (item.action) {
           routes.push({
-            name: item.menuName,
+            name: item.component,
             path: item.path,
             meta: {
               title: item.menuName,
             },
             component: item.component,
           });
-        } else if (item.children && !item.action) {
-          deepList(item.children);
+        } else {
+          if (item.children) {
+            deepList(item.children);
+          } else {
+            routes.push({
+              name: item.component,
+              path: item.path,
+              meta: {
+                title: item.menuName,
+              },
+              component: item.component,
+            });
+          }
         }
       }
     };

@@ -37,18 +37,27 @@ export default {
   },
   watch: {
     active(newVal, oldVal) {
-      console.log(Window.viewer);
+      console.log(this.viewer);
     },
   },
   methods: {
     initCesium() {
-      var viewer = new Cesium.Viewer("cesiumContainer", {
+      const viewer = new Cesium.Viewer("cesiumContainer", {
         animation: false,
         timeline: false,
         imageryProvider: false,
       });
-      viewer._cesiumWidget._creditContainer.style.display = "none";
-      Window.viewer = viewer;
+      viewer._cesiumWidget._creditContainer.style.display = "none"; // 隐藏版权信息
+      viewer.imageryLayers.removeAll();
+      viewer.scene.fxaa = false; // 改善实体的文字和图片清晰度
+      viewer.scene.globe.maximumScreenSpaceError = 4 / 3; // 降低性能提供图片质量
+      // 添加一个图层
+      this.gdLayer = viewer.imageryLayers.addImageryProvider(
+        new Cesium.ArcGisMapServerImageryProvider({
+          url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+        })
+      );
+      this.viewer = viewer;
     },
     // 定位 https://blog.csdn.net/qq_41156424/article/details/107220776
     async addGeoJson() {
@@ -57,8 +66,8 @@ export default {
         fill: Cesium.Color.PINK.withAlpha(0.5), // 填充色
         strokeWidth: 3, // 粗细
       });
-      Window.viewer.dataSources.add(res);
-      Window.viewer.flyTo(Window.viewer.dataSources.add(res), {
+      this.viewer.dataSources.add(res);
+      this.viewer.flyTo(this.viewer.dataSources.add(res), {
         duration: 5, // 飞行时间
         maximumHeight: 600, // 飞行最大高度
         offset: {
@@ -75,14 +84,14 @@ export default {
         40.02804946899414,
         0
       );
-      Window.viewer.entities.add({
+      this.viewer.entities.add({
         position: position,
         model: {
           uri: "GroundVehicle.glb",
         },
       });
 
-      Window.viewer.camera.setView({
+      this.viewer.camera.setView({
         destination: Cesium.Cartesian3.fromDegrees(
           // 相机位置
           -75.62898254394531,
@@ -99,17 +108,21 @@ export default {
     },
     async addKml() {
       var options = {
-        camera: Window.viewer.scene.camera,
-        canvas: Window.viewer.scene.canvas,
+        camera: this.viewer.scene.camera,
+        canvas: this.viewer.scene.canvas,
       };
       var promiseKml = new Cesium.KmlDataSource.load("kmlData.kmz", options);
       promiseKml.then((kmlData) => {
-        Window.viewer.dataSources.add(kmlData);
+        this.viewer.dataSources.add(kmlData);
       });
     },
     remove() {
-      Window.viewer.dataSources.removeAll();
-      Window.viewer.entities.removeAll();
+      if (this.viewer && this.viewer.dataSources) {
+        this.viewer.dataSources.removeAll();
+        this.viewer.entities.removeAll();
+      } else {
+        console.error("Viewer or dataSources is not initialized!");
+      }
     },
   },
 };
