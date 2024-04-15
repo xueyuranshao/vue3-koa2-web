@@ -1,6 +1,16 @@
 <template>
   <div class="cesium-layer">
-    <DataSource></DataSource>
+    <div class="menu-toggle-button" @click="toggleMenu">
+      <i
+        :class="{
+          'icon-arrow-right': isMenuOpen,
+          'icon-arrow-left': !isMenuOpen,
+        }"
+      ></i>
+    </div>
+    <div class="left-menu-container" :class="{ collapsed: !isMenuOpen }">
+      <DataSource></DataSource>
+    </div>
     <div id="cesiumContainer"></div>
   </div>
 </template>
@@ -8,6 +18,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import DataSource from "@/components/DataSource/DataSource.vue";
+
 export default {
   name: "CesiumLayer",
   components: {
@@ -15,6 +26,8 @@ export default {
   },
   setup() {
     const viewer = ref(null);
+    const isMenuOpen = ref(true);
+
     onMounted(async () => {
       try {
         viewer.value = await initCesium();
@@ -44,8 +57,15 @@ export default {
         })
       );
     };
+
+    const toggleMenu = () => {
+      isMenuOpen.value = !isMenuOpen.value;
+    };
+
     return {
       viewer,
+      isMenuOpen,
+      toggleMenu,
     };
   },
 };
@@ -53,13 +73,59 @@ export default {
 
 <style lang="scss" scoped>
 .cesium-layer {
+  position: relative;
   width: 100%;
   height: 100%;
-  position: relative;
+  overflow: hidden; // 防止内容溢出
+
+  .menu-toggle-button {
+    position: absolute;
+    left: 200px; // 与 left-menu-container 的宽度一致
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2; // 确保按钮在菜单之上
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+
+    i {
+      font-size: 20px;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  .left-menu-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px; // 菜单宽度
+    height: 100%;
+    background-color: #f5f7fa;
+    overflow: auto; // 允许滚动
+    transition: left 0.3s ease; // 动画效果
+
+    &.collapsed {
+      left: -200px; // 收起时移到左侧屏幕外
+    }
+  }
 
   #cesiumContainer {
-    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; // 初始宽度为100%
     height: 100%;
+    background-color: transparent; // 确保背景色透明，不会显示白色框
+    transition: left 0.3s ease;
+    .left-menu-container.collapsed ~ & {
+      left: 0;
+      width: 100%; // 菜单收起时，宽度仍然为100%
+    }
   }
 }
 </style>
