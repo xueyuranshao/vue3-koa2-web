@@ -111,54 +111,16 @@ export default {
     bottom: 0;
     width: inherit;
     z-index: 999;
-    background-color: var(--page-bg-color);
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    background-color: var(--page-bg-color); /* 更改为父容器背景颜色或其他深色 */
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
     border-right: 1px solid rgba(255, 255, 255, 0.2);
     overflow-y: auto;
 
     .el-menu-item:not(.is-active),
     .el-submenu__title {
-      background-color: #fff;
+      background-color: transparent; /* 去除淡蓝色背景 */
+      color: var(--menu-text-color);
     }
   }
 }
-</style>
-<style scoped>
-/* 淡蓝色菜单背景 */
-.resource-directory-container .fixed-menu.resource-directory {
-  background-color: #add8e6; /* 淡蓝色 */
-}
-
-/* 淡蓝色文本颜色 */
-.resource-directory-container .fixed-menu.resource-directory .el-submenu__title,
-.resource-directory-container .fixed-menu.resource-directory .el-menu-item {
-  color: #333; /* 深色文本以适应淡蓝色背景 */
-}
-
-/* 当前激活的子菜单或菜单项的文本颜色 */
-.resource-directory-container
-  .fixed-menu.resource-directory
-  .el-submenu.is-active
-  .el-submenu__title,
-.resource-directory-container
-  .fixed-menu.resource-directory
-  .el-menu-item.is-active {
-  color: #0000ff; /* 深蓝色，突出激活状态 */
-}
-
-/* 鼠标悬停时的菜单项文本颜色 */
-.resource-directory-container
-  .fixed-menu.resource-directory
-  .el-menu-item:hover {
-  color: #0000ff; /* 深蓝色，突出悬停状态 */
-}
-
-/* 其他可能需要的样式，比如图标颜色等 */
-.resource-directory-container
-  .fixed-menu.resource-directory
-  .el-submenu__icon-arrow {
-  color: #333; /* 深色图标 */
-}
-
-/* 根据需要添加更多样式 */
 </style>

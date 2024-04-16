@@ -1,13 +1,14 @@
 <template>
   <div class="cesium-layer">
-    <div class="menu-toggle-button" @click="toggleMenu">
-      <i
-        :class="{
-          'icon-arrow-right': isMenuOpen,
-          'icon-arrow-left': !isMenuOpen,
-        }"
-      ></i>
-    </div>
+    <!-- 使用Element Plus的Button组件 -->
+    <el-button
+      type="text"
+      class="menu-toggle-button"
+      :class="isMenuOpen ? 'menu-expanded' : 'menu-collapsed'"
+      @click="toggleMenu"
+    >
+      <i :class="isMenuOpen ? 'menu-expanded' : 'menu-collapsed'"></i>
+    </el-button>
     <div class="left-menu-container" :class="{ collapsed: !isMenuOpen }">
       <DataSource></DataSource>
     </div>
@@ -26,7 +27,7 @@ export default {
   },
   setup() {
     const viewer = ref(null);
-    const isMenuOpen = ref(true);
+    const isMenuOpen = ref(true); // 默认设置为展开状态
 
     onMounted(async () => {
       try {
@@ -80,22 +81,25 @@ export default {
 
   .menu-toggle-button {
     position: absolute;
-    left: 200px; // 与 left-menu-container 的宽度一致
+    left: 0;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 2; // 确保按钮在菜单之上
-    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 2;
     padding: 5px;
     cursor: pointer;
     border-radius: 50%;
-    transition: background-color 0.3s ease;
+    transition: left 0.3s ease, transform 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.5);
+
+    &.menu-expanded {
+      transform: translateY(-50%) translateX(200px); // 展开状态的样式
+    }
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.7);
+    }
 
     i {
       font-size: 20px;
-    }
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.7);
     }
   }
 
