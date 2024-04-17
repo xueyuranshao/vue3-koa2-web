@@ -1,12 +1,13 @@
 <template>
   <div class="cesium-layer">
-    <div class="menu-toggle-button" @click="toggleMenu">
-      <i
-        :class="{
-          'icon-arrow-right': isMenuOpen,
-          'icon-arrow-left': !isMenuOpen,
-        }"
-      ></i>
+    <div
+      class="menu-toggle-button"
+      @click="toggleMenu"
+      :class="{ collapsed: !isMenuOpen }"
+    >
+      <el-icon>
+        <component :is="isMenuOpen ? 'arrow-right' : 'arrow-left'" />
+      </el-icon>
     </div>
     <div class="left-menu-container" :class="{ collapsed: !isMenuOpen }">
       <DataSource></DataSource>
@@ -79,23 +80,25 @@ export default {
   overflow: hidden; // 防止内容溢出
 
   .menu-toggle-button {
-    position: absolute;
-    left: 200px; // 与 left-menu-container 的宽度一致
-    top: 50%;
-    transform: translateY(-50%);
     z-index: 2; // 确保按钮在菜单之上
     background-color: rgba(255, 255, 255, 0.5);
     padding: 5px;
     cursor: pointer;
     border-radius: 50%;
-    transition: background-color 0.3s ease;
+    position: absolute;
+    left: 0; /* 修改为与左侧菜单容器边界对齐 */
+    top: 50%;
+    transform: translateY(-50%) translateX(200px); /* 当菜单展开时，将其移至菜单右侧边缘 */
+    transition: transform 0.3s ease; /* 添加过渡效果 */
 
     i {
       font-size: 20px;
     }
-
     &:hover {
-      background-color: rgba(255, 255, 255, 0.7);
+      background-color: rgba(108, 126, 185, 0.7);
+    }
+    &.collapsed {
+      transform: translateY(-50%) translateX(0);
     }
   }
 
@@ -105,10 +108,8 @@ export default {
     left: 0;
     width: 200px; // 菜单宽度
     height: 100%;
-    background-color: #f5f7fa;
-    overflow: auto; // 允许滚动
     transition: left 0.3s ease; // 动画效果
-
+    padding: 2px;
     &.collapsed {
       left: -200px; // 收起时移到左侧屏幕外
     }
