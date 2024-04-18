@@ -14,6 +14,7 @@ const state = {
   userInfo: storage.getItem("userInfo") || {}, // 获取用户信息
   menuList: storage.getItem("menuList") || [], // 获取菜单权限
   actionList: storage.getItem("actionList") || [], // 获取菜单按钮权限
+  cesiumViewer: null,
 };
 export default createStore({
   state,
