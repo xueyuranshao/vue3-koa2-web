@@ -53,8 +53,9 @@
 </template>
 
 <script>
-import { ref } from "vue";
-
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
+import ResourceManager from "@/utils/ResourceManager.js";
 export default {
   setup() {
     const folders = ref([
@@ -63,7 +64,16 @@ export default {
         title: "土地资源",
         icon: "el-icon-folder",
         resources: [
-          { index: "1-1", title: "图层1", visible: false },
+          {
+            index: "1-1",
+            title: "Geojson",
+            layerUrl:
+              "https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=370000_full",
+            layerName: "",
+            layerType: "geojson",
+            visible: false,
+            dataSource: undefined,
+          },
           { index: "1-2", title: "图层2", visible: false },
         ],
       },
@@ -78,9 +88,13 @@ export default {
         ],
       },
     ]);
+    // 获取地图
+    const store = useStore();
+    const cesiumViewer = computed(() => store.state.cesiumViewer);
 
     const activeIndex = ref("");
     const openedMenus = ref(["1"]);
+    const resourceManager = ResourceManager(folders.value);
     // 处理菜单展、关闭开事件
     const handleOpen = (key, keyPath) => {
       console.log(`打开了菜单: ${key}, 路径: ${keyPath}`);
@@ -89,9 +103,12 @@ export default {
       console.log(`关闭了菜单: ${key}, 路径: ${keyPath}`);
     };
     const updateResourceVisibility = (folderIndex, itemIndex, value) => {
-      // 在这个方法中，实际上已经不需要做任何事情了，
-      // 因为我们已经在v-model中直接修改了resource.visible
-      // folders.value[folderIndex].resources[itemIndex].visible = value;
+      resourceManager.updateResourceVisibility(
+        cesiumViewer,
+        folderIndex,
+        itemIndex,
+        value
+      );
     };
     return {
       folders,
@@ -118,17 +135,6 @@ export default {
   width: 100%;
   height: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  // // 添加悬停效果
-  // transition: box-shadow 0.3s ease-in-out;
-  // &:hover {
-  //   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  // }
-  // // 若需要在展开子菜单时，整个目录有更深的阴影
-  // .el-menu--collapse .el-submenu.is-active {
-  //   .el-submenu__title {
-  //     box-shadow: inset 0 -4px 0 var(--menu-hover-bg-color);
-  //   }
-  // }
   .fixed-menu {
     width: 100%;
     height: 100%;
@@ -136,31 +142,25 @@ export default {
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     border-right: 1px solid rgba(255, 255, 255, 0.2);
     overflow-y: auto;
-    // // 去掉默认的选中样式
-    // .el-menu-item.is-active {
-    //   &,
-    //   & > * {
-    //     background-color: transparent !important;
-    //     color: var(--menu-text-color) !important;
-    //     font-weight: normal !important;
-    //     border-left: none !important;
-    //   }
-    // }
-    // // 添加与switch联动的样式
-    // .custom-resource-active-style {
-    //   font-weight: bold;
-    //   background-color: rgba(0, 0, 0, 0.05); // 或者你希望的其他背景颜色
-    //   color: var(
-    //     --menu-resource-active-color
-    //   ) !important; // 使用新的活动资源文本颜色变量
-    // }
-
     .resource-title {
       color: var(--menu-text-color);
     }
-
     .resource-title-active {
-      color: red !important;
+      color: #007bff !important;
+    }
+  }
+}
+</style>
+<style lang="scss">
+// 去掉默认的选中样式
+.fixed-menu {
+  .el-menu-item.is-active {
+    &,
+    & > * {
+      background-color: transparent !important;
+      color: var(--menu-text-color) !important;
+      font-weight: normal !important;
+      border-left: none !important;
     }
   }
 }

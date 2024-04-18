@@ -24,4 +24,7 @@ export default {
     state.actionList = actionList;
     storage.setItem("actionList", actionList);
   },
+  setViewer(state, viewer) {
+    state.cesiumViewer = viewer;
+  },
 };

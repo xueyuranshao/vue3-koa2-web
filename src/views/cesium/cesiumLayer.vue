@@ -19,7 +19,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import DataSource from "@/components/DataSource/DataSource.vue";
-
+import { useStore } from "vuex";
 export default {
   name: "CesiumLayer",
   components: {
@@ -28,10 +28,12 @@ export default {
   setup() {
     const viewer = ref(null);
     const isMenuOpen = ref(true); // 默认设置为展开状态
+    const store = useStore();
 
     onMounted(async () => {
       try {
         viewer.value = await initCesium();
+        store.commit("setViewer", viewer.value);
       } catch (error) {
         console.error("Cesium initialization failed:", error);
       }
@@ -58,7 +60,6 @@ export default {
         })
       );
     };
-
     const toggleMenu = () => {
       isMenuOpen.value = !isMenuOpen.value;
     };
