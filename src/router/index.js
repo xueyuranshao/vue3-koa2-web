@@ -52,6 +52,8 @@ async function loadAsyncRoutes() {
   if (userInfo.token) {
     try {
       const { menuList } = await API.getPermissionList();
+      console.log(menuList, '---menuList')
+
       let routes = utils.generateRoute(menuList);
       const modules = import.meta.glob("../views/*.vue"); // view下第一层级vue文件
       const topLevelModules = import.meta.glob("../views/*/*.vue"); // view下第二层级vue文件
@@ -66,7 +68,7 @@ async function loadAsyncRoutes() {
         route.component = concatModules[url];
         router.addRoute("home", route);
       });
-    } catch (error) {}
+    } catch (error) { }
   }
 }
 loadAsyncRoutes();
@@ -82,10 +84,18 @@ function checkPermission(path) {
 }
 */
 // 导航守卫
+// 假设我们有以下白名单路由名称或路径
+const whiteList = ['/login', '/cesium/cesiumLayer'];
+
 router.beforeEach(async (to, from, next) => {
-  if (to.name) {
+  if (whiteList.includes(to.path)) { // 如果目标路由在白名单中
+    document.title = to.meta.title;
+    next(); // 直接放行
+  } else if (to.name) {
     if (router.hasRoute(to.name)) {
       document.title = to.meta.title;
+      // 这里可以根据实际情况检查用户是否已登录，未登录则跳转至登录页
+      // 比如：if (!userInfo.token) next('/login');
       next();
     } else {
       next("/404");
@@ -93,7 +103,7 @@ router.beforeEach(async (to, from, next) => {
   } else {
     await loadAsyncRoutes();
     let curRoute = router.getRoutes().filter((item) => item.path == to.path);
-    if (curRoute?.length) {
+    if (curRoute && curRoute.length) {
       document.title = curRoute[0].meta.title;
       next({ ...to, replace: true });
     } else {
