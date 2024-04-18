@@ -1,5 +1,6 @@
 <template>
   <div class="cesium-layer">
+<<<<<<< HEAD
     <div
       class="menu-toggle-button"
       @click="toggleMenu"
@@ -9,6 +10,17 @@
         <component :is="isMenuOpen ? 'arrow-right' : 'arrow-left'" />
       </el-icon>
     </div>
+=======
+    <!-- 使用Element Plus的Button组件 -->
+    <el-button
+      type="text"
+      class="menu-toggle-button"
+      :class="isMenuOpen ? 'menu-expanded' : 'menu-collapsed'"
+      @click="toggleMenu"
+    >
+      <i :class="isMenuOpen ? 'menu-expanded' : 'menu-collapsed'"></i>
+    </el-button>
+>>>>>>> cb78cadaccb2f4d3609b8ad8873eafd43dba0c69
     <div class="left-menu-container" :class="{ collapsed: !isMenuOpen }">
       <DataSource></DataSource>
     </div>
@@ -27,7 +39,7 @@ export default {
   },
   setup() {
     const viewer = ref(null);
-    const isMenuOpen = ref(true);
+    const isMenuOpen = ref(true); // 默认设置为展开状态
 
     onMounted(async () => {
       try {
@@ -80,6 +92,7 @@ export default {
   overflow: hidden; // 防止内容溢出
 
   .menu-toggle-button {
+<<<<<<< HEAD
     z-index: 2; // 确保按钮在菜单之上
     background-color: rgba(255, 255, 255, 0.5);
     padding: 5px;
@@ -90,16 +103,38 @@ export default {
     top: 50%;
     transform: translateY(-50%) translateX(200px); /* 当菜单展开时，将其移至菜单右侧边缘 */
     transition: transform 0.3s ease; /* 添加过渡效果 */
+=======
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: left 0.3s ease, transform 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.5);
+
+    &.menu-expanded {
+      transform: translateY(-50%) translateX(200px); // 展开状态的样式
+    }
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+>>>>>>> cb78cadaccb2f4d3609b8ad8873eafd43dba0c69
 
     i {
       font-size: 20px;
     }
+<<<<<<< HEAD
     &:hover {
       background-color: rgba(108, 126, 185, 0.7);
     }
     &.collapsed {
       transform: translateY(-50%) translateX(0);
     }
+=======
+>>>>>>> cb78cadaccb2f4d3609b8ad8873eafd43dba0c69
   }
 
   .left-menu-container {
