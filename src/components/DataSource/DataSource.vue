@@ -133,12 +133,7 @@ export default {
     width: 100%;
     height: 100%;
     z-index: 999;
-<<<<<<< HEAD
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-=======
-    background-color: var(--page-bg-color); /* 更改为父容器背景颜色或其他深色 */
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
->>>>>>> cb78cadaccb2f4d3609b8ad8873eafd43dba0c69
     border-right: 1px solid rgba(255, 255, 255, 0.2);
     overflow-y: auto;
     // // 去掉默认的选中样式
@@ -160,19 +155,12 @@ export default {
     //   ) !important; // 使用新的活动资源文本颜色变量
     // }
 
-<<<<<<< HEAD
     .resource-title {
       color: var(--menu-text-color);
     }
 
     .resource-title-active {
       color: red !important;
-=======
-    .el-menu-item:not(.is-active),
-    .el-submenu__title {
-      background-color: transparent; /* 去除淡蓝色背景 */
-      color: var(--menu-text-color);
->>>>>>> cb78cadaccb2f4d3609b8ad8873eafd43dba0c69
     }
   }
 }
