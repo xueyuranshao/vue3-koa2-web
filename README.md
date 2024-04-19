@@ -1,7 +1,7 @@
 # vue3-koa2-web
 
 vue3+elementPlus+Koa2
-node 18+
+node v18.19.0
 
 # 安装依赖
 

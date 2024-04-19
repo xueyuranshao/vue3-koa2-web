@@ -92,31 +92,29 @@ function checkPermission(path) {
 // 导航守卫
 // 假设我们有以下白名单路由名称或路径
 const whiteList = ["/login", "/three/cesium/cesiumLayer"];
+let userInfo = JSON.parse(window.localStorage.getItem("manager")).userInfo;
 
 router.beforeEach(async (to, from, next) => {
   if (whiteList.includes(to.path)) {
-    // 如果目标路由在白名单中
     document.title = to.meta.title;
-    next(); // 直接放行
-  } else if (to.name) {
-    if (router.hasRoute(to.name)) {
-      document.title = to.meta.title;
-      // 这里可以根据实际情况检查用户是否已登录，未登录则跳转至登录页
-      // 比如：if (!userInfo.token) next('/login');
-      next();
+    next();
+  } else if (to.name && router.hasRoute(to.name)) {
+    document.title = to.meta.title;
+    // 检查用户是否已登录
+    if (!userInfo) {
+      next("/login");
     } else {
-      next("/404");
+      next();
     }
   } else {
     await loadAsyncRoutes();
-    let curRoute = router.getRoutes().filter((item) => item.path == to.path);
-    if (curRoute && curRoute.length) {
-      document.title = curRoute[0].meta.title;
+    let curRoute = router.getRoutes().find((item) => item.path === to.path);
+    if (curRoute) {
+      document.title = curRoute.meta.title;
       next({ ...to, replace: true });
     } else {
       next("/404");
     }
   }
 });
-
 export default router;
