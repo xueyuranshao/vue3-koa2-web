@@ -26,17 +26,25 @@ service.interceptors.request.use((req) => {
 });
 
 // 响应拦截
+const whiteList = ["/login", "/three/cesium/cesiumLayer"];
+
 service.interceptors.response.use((res) => {
   const { code, data, msg } = res.data;
   if (code === 200) {
     return data;
-  } else if (code === 500001) {
-    ElMessage.error(TOKEN_INVALID);
-    setTimeout(() => {
-      router.push("/login");
-    }, 1500);
-    return Promise.reject(TOKEN_INVALID);
+  }
+  // 检查当前请求是否属于白名单路由
+  const currentRoutePath = router.currentRoute.value.path; // 假设 router 是 Vue Router 实例
+  if (!whiteList.includes(currentRoutePath)) {
+    if (code === 500001) {
+      ElMessage.error(TOKEN_INVALID);
+      setTimeout(() => {
+        router.push("/login");
+      }, 1500);
+    }
+    return Promise.reject(msg || NETWORK_ERROR);
   } else {
+    // 对于白名单中的路由，仅显示错误消息，不进行跳转
     ElMessage.error(msg || NETWORK_ERROR);
     return Promise.reject(msg || NETWORK_ERROR);
   }
