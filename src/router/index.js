@@ -3,6 +3,7 @@ import Home from "@/components/Home.vue";
 import storage from "./../utils/storage";
 import API from "./../api";
 import utils from "./../utils/utils";
+import { ROUTE_WHITELIST } from "@/utils/ConfigFile.js"; // 引入全局白名单
 
 const routes = [
   {
@@ -90,17 +91,14 @@ function checkPermission(path) {
 }
 */
 // 导航守卫
-// 假设我们有以下白名单路由名称或路径
-const whiteList = ["/login", "/three/cesium/cesiumLayer"];
-let userInfo = JSON.parse(window.localStorage.getItem("manager")).userInfo;
-
 router.beforeEach(async (to, from, next) => {
-  if (whiteList.includes(to.path)) {
+  if (ROUTE_WHITELIST.includes(to.path)) {
     document.title = to.meta.title;
     next();
   } else if (to.name && router.hasRoute(to.name)) {
     document.title = to.meta.title;
     // 检查用户是否已登录
+    let userInfo = JSON.parse(window.localStorage.getItem("manager")).userInfo;
     if (!userInfo) {
       next("/login");
     } else {
@@ -117,4 +115,5 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 });
+
 export default router;
