@@ -12,6 +12,8 @@
     <div class="left-menu-container" :class="{ collapsed: !isMenuOpen }">
       <DataSource></DataSource>
     </div>
+    <BaseMapSwitcher></BaseMapSwitcher>
+
     <div id="cesiumContainer"></div>
   </div>
 </template>
@@ -19,46 +21,65 @@
 <script>
 import { ref, onMounted } from "vue";
 import DataSource from "@/components/DataSource/DataSource.vue";
+import BaseMapSwitcher from "@/components/BaseMapSwitcher/BaseMapSwitcher.vue";
 import { useStore } from "vuex";
+import * as Cesium from "cesium";
+import { ininCoordinates } from "@/utils/ConfigFile.js"; // 引入全局白名单
+
 export default {
   name: "CesiumLayer",
   components: {
     DataSource,
+    BaseMapSwitcher,
   },
   setup() {
     const viewer = ref(null);
     const isMenuOpen = ref(true); // 默认设置为展开状态
     const store = useStore();
-
     onMounted(async () => {
-      try {
-        viewer.value = await initCesium();
-        store.commit("setViewer", viewer.value);
-      } catch (error) {
-        console.error("Cesium initialization failed:", error);
+      const container = document.getElementById("cesiumContainer");
+      if (container) {
+        viewer.value = new Cesium.Viewer(container, {
+          animation: false,
+          timeline: false,
+          geocoder: false, // 是否显示geocoder小器件，右上角查询按钮
+          homeButton: false, // 是否显示Home按钮
+          infoBox: false, // 是否显示信息框
+          sceneModePicker: false, // 是否显示3D/2D选择器
+          navigationHelpButton: false, // 是否显示右上角的帮助按钮
+          baseLayerPicker: false, // 是否显示图层选择器
+        });
+        try {
+          configureCesium(viewer.value);
+          store.commit("setViewer", viewer.value);
+        } catch (error) {
+          console.error("Cesium configuration failed:", error);
+        }
+      } else {
+        console.error("Cesium container element not found!");
       }
     });
-    const initCesium = async () => {
-      const viewerContainer = new Cesium.Viewer("cesiumContainer", {
-        animation: false,
-        timeline: false,
-        // ... 其他必要的配置项
+    const configureCesium = async (viewer) => {
+      viewer._cesiumWidget._creditContainer.style.display = "none"; // 隐藏版权信息
+      viewer.scene.fxaa = false; // 改善实体的文字和图片清晰度
+      viewer.scene.globe.maximumScreenSpaceError = 4 / 3; // 降低性能提供图片质量
+      const initialOrientation = new Cesium.HeadingPitchRoll.fromDegrees(
+        0.0,
+        -90.0,
+        0.0
+      ); // 保持默认视角朝向
+      viewer.camera.setView({
+        destination: Cesium.Cartesian3.fromDegrees(
+          ininCoordinates.longitude,
+          ininCoordinates.latitude,
+          ininCoordinates.targetHeight
+        ),
+        orientation: {
+          heading: initialOrientation.heading,
+          pitch: initialOrientation.pitch,
+          roll: initialOrientation.roll,
+        },
       });
-      // 配置Cesium Viewer
-      configureCesium(viewerContainer);
-      return viewerContainer;
-    };
-    const configureCesium = (viewerContainer) => {
-      viewerContainer._cesiumWidget._creditContainer.style.display = "none"; // 隐藏版权信息
-      viewerContainer.imageryLayers.removeAll();
-      viewerContainer.scene.fxaa = false; // 改善实体的文字和图片清晰度
-      viewerContainer.scene.globe.maximumScreenSpaceError = 4 / 3; // 降低性能提供图片质量
-      // 添加图层
-      viewerContainer.imageryLayers.addImageryProvider(
-        new Cesium.ArcGisMapServerImageryProvider({
-          url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
-        })
-      );
     };
     const toggleMenu = () => {
       isMenuOpen.value = !isMenuOpen.value;

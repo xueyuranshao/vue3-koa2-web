@@ -14,8 +14,6 @@
 export default {
   name: "app",
   mounted() {
-    let userInfo = this.$storage.getItem("userInfo");
-    if (!userInfo) this.$router.push("/login");
     setTimeout(() => {
       window.L2Dwidget.init({
         pluginRootPath: "live2dw/",

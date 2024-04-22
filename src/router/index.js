@@ -3,6 +3,7 @@ import Home from "@/components/Home.vue";
 import storage from "./../utils/storage";
 import API from "./../api";
 import utils from "./../utils/utils";
+import { ROUTE_WHITELIST } from "@/utils/ConfigFile.js"; // 引入全局白名单
 
 const routes = [
   {
@@ -21,6 +22,14 @@ const routes = [
           title: "欢迎登录",
         },
         component: () => import("@/views/Welcome.vue"),
+      },
+      {
+        name: "cesiumLayer",
+        path: "/three/cesium/cesiumLayer",
+        meta: {
+          title: "登录",
+        },
+        component: () => import("@/views/Cesium/cesiumLayer.vue"),
       },
     ],
   },
@@ -88,23 +97,25 @@ function checkPermission(path) {
 const whiteList = ['/login', '/cesium/cesiumLayer'];
 
 router.beforeEach(async (to, from, next) => {
-  if (whiteList.includes(to.path)) { // 如果目标路由在白名单中
+  if (ROUTE_WHITELIST.includes(to.path)) {
     document.title = to.meta.title;
-    next(); // 直接放行
-  } else if (to.name) {
-    if (router.hasRoute(to.name)) {
-      document.title = to.meta.title;
-      // 这里可以根据实际情况检查用户是否已登录，未登录则跳转至登录页
-      // 比如：if (!userInfo.token) next('/login');
-      next();
+    next();
+  } else if (to.name && router.hasRoute(to.name)) {
+    document.title = to.meta.title;
+    // 检查用户是否已登录
+    let userInfo =
+      JSON.parse(window.localStorage.getItem("manager")) &&
+      JSON.parse(window.localStorage.getItem("manager")).userInfo;
+    if (!userInfo) {
+      next("/login");
     } else {
-      next("/404");
+      next();
     }
   } else {
     await loadAsyncRoutes();
-    let curRoute = router.getRoutes().filter((item) => item.path == to.path);
-    if (curRoute && curRoute.length) {
-      document.title = curRoute[0].meta.title;
+    let curRoute = router.getRoutes().find((item) => item.path === to.path);
+    if (curRoute) {
+      document.title = curRoute.meta.title;
       next({ ...to, replace: true });
     } else {
       next("/404");

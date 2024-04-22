@@ -6,6 +6,7 @@ import config from "./../config";
 import { ElMessage } from "element-plus";
 import router from "./../router";
 import storage from "./storage";
+import { ROUTE_WHITELIST } from "@/utils/ConfigFile.js"; // 引入全局白名单
 
 const TOKEN_INVALID = "Token认证失败，请重新登录";
 const NETWORK_ERROR = "网络请求异常，请稍后重试";
@@ -30,13 +31,19 @@ service.interceptors.response.use((res) => {
   const { code, data, msg } = res.data;
   if (code === 200) {
     return data;
-  } else if (code === 500001) {
-    ElMessage.error(TOKEN_INVALID);
-    setTimeout(() => {
-      router.push("/login");
-    }, 1500);
-    return Promise.reject(TOKEN_INVALID);
+  }
+  // 检查当前请求是否属于白名单路由
+  const currentRoutePath = router.currentRoute.value.path; // 假设 router 是 Vue Router 实例
+  if (!ROUTE_WHITELIST.includes(currentRoutePath)) {
+    if (code === 500001) {
+      ElMessage.error(TOKEN_INVALID);
+      setTimeout(() => {
+        router.push("/login");
+      }, 1500);
+    }
+    return Promise.reject(msg || NETWORK_ERROR);
   } else {
+    // 对于白名单中的路由，仅显示错误消息，不进行跳转
     ElMessage.error(msg || NETWORK_ERROR);
     return Promise.reject(msg || NETWORK_ERROR);
   }
