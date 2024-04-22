@@ -7,8 +7,6 @@
       text-color="#333"
       active-text-color="#409EFF"
       mode="vertical"
-      @open="handleOpen"
-      @close="handleClose"
     >
       <el-submenu
         v-for="(folder, folderIndex) in folders"
@@ -95,13 +93,6 @@ export default {
     const activeIndex = ref("");
     const openedMenus = ref(["1"]);
     const resourceManager = ResourceManager(folders.value);
-    // 处理菜单展、关闭开事件
-    const handleOpen = (key, keyPath) => {
-      console.log(`打开了菜单: ${key}, 路径: ${keyPath}`);
-    };
-    const handleClose = (key, keyPath) => {
-      console.log(`关闭了菜单: ${key}, 路径: ${keyPath}`);
-    };
     const updateResourceVisibility = (folderIndex, itemIndex, value) => {
       resourceManager.updateResourceVisibility(
         cesiumViewer,
@@ -114,8 +105,6 @@ export default {
       folders,
       activeIndex,
       openedMenus,
-      handleOpen,
-      handleClose,
       updateResourceVisibility,
     };
   },
