@@ -1,13 +1,12 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 const path = require("path"); // import path from 'path'
-
+import cesium from "vite-plugin-cesium";
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      cesium: path.resolve(__dirname, "../node_modules/cesium/Source"),
     },
   },
   server: {
@@ -19,5 +18,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [vue()],
+  plugins: [vue(), cesium()],
 });

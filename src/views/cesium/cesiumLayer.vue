@@ -20,6 +20,7 @@
 import { ref, onMounted } from "vue";
 import DataSource from "@/components/DataSource/DataSource.vue";
 import { useStore } from "vuex";
+import * as Cesium from "cesium";
 export default {
   name: "CesiumLayer",
   components: {
@@ -29,37 +30,36 @@ export default {
     const viewer = ref(null);
     const isMenuOpen = ref(true); // 默认设置为展开状态
     const store = useStore();
-
     onMounted(async () => {
-      try {
-        viewer.value = await initCesium();
-        store.commit("setViewer", viewer.value);
-      } catch (error) {
-        console.error("Cesium initialization failed:", error);
+      const container = document.getElementById("cesiumContainer");
+      if (container) {
+        viewer.value = new Cesium.Viewer(container, {
+          animation: false,
+          timeline: false,
+          // 初始化Cesium Viewer的配置项...
+        });
+        try {
+          // configureCesium(viewer.value);
+          store.commit("setViewer", viewer.value);
+        } catch (error) {
+          console.error("Cesium configuration failed:", error);
+        }
+      } else {
+        console.error("Cesium container element not found!");
       }
     });
-    const initCesium = async () => {
-      const viewerContainer = new Cesium.Viewer("cesiumContainer", {
-        animation: false,
-        timeline: false,
-        // ... 其他必要的配置项
-      });
-      // 配置Cesium Viewer
-      configureCesium(viewerContainer);
-      return viewerContainer;
-    };
-    const configureCesium = (viewerContainer) => {
-      viewerContainer._cesiumWidget._creditContainer.style.display = "none"; // 隐藏版权信息
-      viewerContainer.imageryLayers.removeAll();
-      viewerContainer.scene.fxaa = false; // 改善实体的文字和图片清晰度
-      viewerContainer.scene.globe.maximumScreenSpaceError = 4 / 3; // 降低性能提供图片质量
-      // 添加图层
-      viewerContainer.imageryLayers.addImageryProvider(
+    const configureCesium = async (viewer) => {
+      viewer._cesiumWidget._creditContainer.style.display = "none"; // 隐藏版权信息
+      viewer.imageryLayers.removeAll();
+      viewer.scene.fxaa = false; // 改善实体的文字和图片清晰度
+      viewer.scene.globe.maximumScreenSpaceError = 4 / 3; // 降低性能提供图片质量
+      viewer.imageryLayers.addImageryProvider(
         new Cesium.ArcGisMapServerImageryProvider({
           url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
         })
       );
     };
+
     const toggleMenu = () => {
       isMenuOpen.value = !isMenuOpen.value;
     };
