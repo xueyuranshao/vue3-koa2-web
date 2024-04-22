@@ -15,6 +15,17 @@ const state = {
   menuList: storage.getItem("menuList") || [], // 获取菜单权限
   actionList: storage.getItem("actionList") || [], // 获取菜单按钮权限
   cesiumViewer: null,
+  baseMaps: {
+    tiandituApiKey: "b7d87c30876f4af87ccd40c1abac5634",
+    VECTOR: {
+      urlTemplate: "http://t0.tianditu.gov.cn/vec_w/wmts?",
+      layer: "vec",
+    },
+    IMAGE: {
+      urlTemplate: "http://t0.tianditu.gov.cn/img_w/wmts?",
+      layer: "img",
+    },
+  },
 };
 export default createStore({
   state,

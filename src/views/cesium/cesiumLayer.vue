@@ -12,6 +12,8 @@
     <div class="left-menu-container" :class="{ collapsed: !isMenuOpen }">
       <DataSource></DataSource>
     </div>
+    <BaseMapSwitcher></BaseMapSwitcher>
+
     <div id="cesiumContainer"></div>
   </div>
 </template>
@@ -19,6 +21,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import DataSource from "@/components/DataSource/DataSource.vue";
+import BaseMapSwitcher from "@/components/BaseMapSwitcher/BaseMapSwitcher.vue";
 import { useStore } from "vuex";
 import * as Cesium from "cesium";
 import { ininCoordinates } from "@/utils/ConfigFile.js"; // 引入全局白名单
@@ -27,6 +30,7 @@ export default {
   name: "CesiumLayer",
   components: {
     DataSource,
+    BaseMapSwitcher,
   },
   setup() {
     const viewer = ref(null);
@@ -42,6 +46,8 @@ export default {
           homeButton: false, // 是否显示Home按钮
           infoBox: false, // 是否显示信息框
           sceneModePicker: false, // 是否显示3D/2D选择器
+          navigationHelpButton: false, // 是否显示右上角的帮助按钮
+          baseLayerPicker: false, // 是否显示图层选择器
         });
         try {
           configureCesium(viewer.value);

@@ -51,11 +51,13 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import ResourceManager from "@/utils/ResourceManager.js";
 export default {
   setup() {
+    const activeIndex = ref("");
+    const openedMenus = ref(["1"]);
     const folders = ref([
       {
         index: "1",
@@ -89,13 +91,16 @@ export default {
     // 获取地图
     const store = useStore();
     const cesiumViewer = computed(() => store.state.cesiumViewer);
+    const resourceManagerCall = ref(null);
 
-    const activeIndex = ref("");
-    const openedMenus = ref(["1"]);
-    const resourceManager = ResourceManager(folders.value);
+    onMounted(async () => {
+      resourceManagerCall.value = new ResourceManager(
+        folders.value,
+        cesiumViewer
+      );
+    });
     const updateResourceVisibility = (folderIndex, itemIndex, value) => {
-      resourceManager.updateResourceVisibility(
-        cesiumViewer,
+      resourceManagerCall.value.updateResourceVisibility(
         folderIndex,
         itemIndex,
         value
@@ -105,6 +110,7 @@ export default {
       folders,
       activeIndex,
       openedMenus,
+      resourceManagerCall,
       updateResourceVisibility,
     };
   },
