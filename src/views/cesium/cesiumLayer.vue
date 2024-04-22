@@ -21,6 +21,8 @@ import { ref, onMounted } from "vue";
 import DataSource from "@/components/DataSource/DataSource.vue";
 import { useStore } from "vuex";
 import * as Cesium from "cesium";
+import { ininCoordinates } from "@/utils/ConfigFile.js"; // 引入全局白名单
+
 export default {
   name: "CesiumLayer",
   components: {
@@ -36,10 +38,13 @@ export default {
         viewer.value = new Cesium.Viewer(container, {
           animation: false,
           timeline: false,
-          // 初始化Cesium Viewer的配置项...
+          geocoder: false, // 是否显示geocoder小器件，右上角查询按钮
+          homeButton: false, // 是否显示Home按钮
+          infoBox: false, // 是否显示信息框
+          sceneModePicker: false, // 是否显示3D/2D选择器
         });
         try {
-          // configureCesium(viewer.value);
+          configureCesium(viewer.value);
           store.commit("setViewer", viewer.value);
         } catch (error) {
           console.error("Cesium configuration failed:", error);
@@ -50,16 +55,26 @@ export default {
     });
     const configureCesium = async (viewer) => {
       viewer._cesiumWidget._creditContainer.style.display = "none"; // 隐藏版权信息
-      viewer.imageryLayers.removeAll();
       viewer.scene.fxaa = false; // 改善实体的文字和图片清晰度
       viewer.scene.globe.maximumScreenSpaceError = 4 / 3; // 降低性能提供图片质量
-      viewer.imageryLayers.addImageryProvider(
-        new Cesium.ArcGisMapServerImageryProvider({
-          url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
-        })
-      );
+      const initialOrientation = new Cesium.HeadingPitchRoll.fromDegrees(
+        0.0,
+        -90.0,
+        0.0
+      ); // 保持默认视角朝向
+      viewer.camera.setView({
+        destination: Cesium.Cartesian3.fromDegrees(
+          ininCoordinates.longitude,
+          ininCoordinates.latitude,
+          ininCoordinates.targetHeight
+        ),
+        orientation: {
+          heading: initialOrientation.heading,
+          pitch: initialOrientation.pitch,
+          roll: initialOrientation.roll,
+        },
+      });
     };
-
     const toggleMenu = () => {
       isMenuOpen.value = !isMenuOpen.value;
     };
