@@ -98,7 +98,9 @@ router.beforeEach(async (to, from, next) => {
   } else if (to.name && router.hasRoute(to.name)) {
     document.title = to.meta.title;
     // 检查用户是否已登录
-    let userInfo = JSON.parse(window.localStorage.getItem("manager")).userInfo;
+    let userInfo =
+      JSON.parse(window.localStorage.getItem("manager")) &&
+      JSON.parse(window.localStorage.getItem("manager")).userInfo;
     if (!userInfo) {
       next("/login");
     } else {
