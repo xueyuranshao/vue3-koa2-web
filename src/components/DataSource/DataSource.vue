@@ -40,7 +40,7 @@
           <el-switch
             style="margin-left: 10px"
             v-model="resource.visible"
-            @change="updateResourceVisibility(folderIndex, itemIndex, $event)"
+            @change="updateResourceVisibility(resource)"
             active-color="#409EFF"
             inactive-color="#ccc"
           />
@@ -66,25 +66,28 @@ export default {
         resources: [
           {
             index: "1-1",
+            layerCode: "37000_sd",
             title: "Geojson",
             layerUrl:
               "https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=370000_full",
             layerName: "",
+            platForm: "dataV",
             layerType: "geojson",
             visible: false,
             dataSource: undefined,
           },
-          { index: "1-2", title: "图层2", visible: false },
-        ],
-      },
-      {
-        index: "2",
-        title: "耕地资源",
-        icon: "el-icon-folder",
-        resources: [
-          { index: "2-1", title: "图层1", visible: false },
-          { index: "2-2", title: "图层2", visible: false },
-          { index: "2-3", title: "图层3", visible: false },
+          {
+            index: "1-2",
+            layerCode: "37001_sd",
+            title: "Geojson",
+            layerUrl:
+              "https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=370009_full",
+            layerName: "",
+            platForm: "dataV",
+            layerType: "geojson",
+            visible: false,
+            dataSource: undefined,
+          },
         ],
       },
     ]);
@@ -95,16 +98,14 @@ export default {
 
     onMounted(async () => {
       resourceManagerCall.value = new ResourceManager(
+        "DataSource",
         folders.value,
         cesiumViewer
       );
     });
-    const updateResourceVisibility = (folderIndex, itemIndex, value) => {
-      resourceManagerCall.value.updateResourceVisibility(
-        folderIndex,
-        itemIndex,
-        value
-      );
+    const updateResourceVisibility = (resource) => {
+      console.log(resource);
+      resourceManagerCall.value.updateResourceVisibility(resource);
     };
     return {
       folders,

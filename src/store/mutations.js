@@ -3,8 +3,8 @@
  * @Version: 2.0
  * @Autor: shiXl
  * @Date: 2021-08-08 17:09:50
- * @LastEditors: shiXl
- * @LastEditTime: 2021-11-18 22:20:21
+ * @LastEditors: shixl shixl@dist.com.cn
+ * @LastEditTime: 2024-04-22 22:50:23
  */
 /**
  * Mutations 业务层数据提交
@@ -26,5 +26,6 @@ export default {
   },
   setViewer(state, viewer) {
     state.cesiumViewer = viewer;
+    state.cesiumViewerInitialized = true;
   },
 };

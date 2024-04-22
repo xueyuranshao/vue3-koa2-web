@@ -3,8 +3,8 @@
  * @Version: 2.0
  * @Autor: shiXl
  * @Date: 2021-08-08 17:09:50
- * @LastEditors: shiXl
- * @LastEditTime: 2021-11-18 22:19:13
+ * @LastEditors: shixl shixl@dist.com.cn
+ * @LastEditTime: 2024-04-22 22:50:41
  */
 import { createStore } from "vuex";
 import mutations from "./mutations";
@@ -15,6 +15,7 @@ const state = {
   menuList: storage.getItem("menuList") || [], // 获取菜单权限
   actionList: storage.getItem("actionList") || [], // 获取菜单按钮权限
   cesiumViewer: null,
+  cesiumViewerInitialized: false,
   baseMaps: {
     tiandituApiKey: "b7d87c30876f4af87ccd40c1abac5634",
     VECTOR: {

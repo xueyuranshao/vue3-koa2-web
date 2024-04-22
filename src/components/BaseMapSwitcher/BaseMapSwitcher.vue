@@ -1,62 +1,123 @@
-<!-- BasemapToggle.vue -->
 <template>
-  <div class="basemap-toggle" @click="toggleBaseMap">
-    <el-button size="small">{{ currentBasemapLabel }}</el-button>
+  <div class="basemap-toggle">
+    <button @click="toggleBaseMap('vector')">切换到矢量图层</button>
+    <button @click="toggleBaseMap('raster')">切换到影像图层</button>
   </div>
 </template>
 
-<script>
-import * as Cesium from "cesium";
-import { ref, computed } from "vue";
+<script setup>
+import { ref, onMounted, computed, watch } from "vue";
+import ResourceManager from "@/utils/ResourceManager.js";
 import { useStore } from "vuex";
 
-export default {
-  props: {},
-  setup(props) {
-    const store = useStore();
-    // 使用Vuex中的state来管理当前底图类型
-    const currentBasemapKey = ref(store.state.currentBasemapKey || "VECTOR");
-    const basemapLabels = {
-      VECTOR: "矢量地图",
-      IMAGE: "影像地图",
-    };
-    const toggleBaseMap = () => {
-      const nextKey = currentBasemapKey.value === "VECTOR" ? "IMAGE" : "VECTOR";
-      store.commit("UPDATE_BASEMAP_KEY", nextKey);
-
-      const imageryLayers = store.state.cesiumViewer.imageryLayers;
-      const currentLayer = imageryLayers.get(0);
-      if (currentLayer) {
-        imageryLayers.remove(currentLayer, true);
-      }
-
-      const newLayerConfig = store.state.baseMaps[nextKey];
-      const imageryProvider = new Cesium.WebMapTileServiceImageryProvider({
-        url: newLayerConfig.urlTemplate,
-        layer: newLayerConfig.layer,
-        style: "default",
-        format: "tiles",
-        tileMatrixSetID: "w",
-        maximumLevel: 18,
-        tilingScheme: new Cesium.GeographicTilingScheme(),
-        tileMatrixLabels: [...Array(19).keys()].map((l) => `w${l}`),
-        credit: new Cesium.Credit(`天地图-${nextKey} © 天地图`),
-        // 在这里注入密钥
-        key: store.state.baseMaps.tiandituApiKey,
-      });
-
-      const newLayer = new Cesium.ImageryLayer(imageryProvider);
-      imageryLayers.add(newLayer, 0);
-    };
-    return {
-      currentBasemapKey,
-      currentBasemapLabel: computed(
-        () => basemapLabels[currentBasemapKey.value]
-      ),
-      toggleBaseMap,
-    };
+const folders = ref([
+  {
+    index: "1",
+    title: "底图",
+    icon: "el-icon-folder",
+    resources: [
+      {
+        index: "1-2",
+        layerCode: "37003_sd",
+        title: "矢量底图",
+        layerUrl:
+          "https://t{s}.tianditu.gov.cn/vec_w/wmts?service=WMTS&request=GetTile&version=1.0.0&LAYER=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=b7d87c30876f4af87ccd40c1abac5634",
+        layerName: "",
+        platForm: "tianditu",
+        layerType: "vector",
+        visible: false,
+        dataSource: undefined,
+      },
+      {
+        index: "1-3",
+        layerCode: "37004_sd",
+        title: "影像底图",
+        layerUrl:
+          "http://t6.tianditu.gov.cn/img_w/wmts?tk=b7d87c30876f4af87ccd40c1abac5634",
+        layerName: "",
+        platForm: "tianditu",
+        layerType: "raster",
+        visible: false,
+        dataSource: undefined,
+      },
+    ],
   },
-};
+]);
+// 获取地图
+let resourceManagerCall = ref(null);
+const store = useStore();
+let currentVisibleLayer = ref("vector"); // 默认显示矢量图层
+
+// watch(
+//   () => store.state.cesiumViewerInitialized,
+//   async (initialized) => {
+//     if (initialized) {
+//       onMounted(async () => {
+//         console.log("Cesium Viewer已初始化完成，开始加载资源...");
+//         resourceManagerCall.value = new ResourceManager(
+//           "BaseMapSwitcher",
+//           folders.value,
+//           store.state.cesiumViewer
+//         );
+//         // 设置矢量图层默认可见
+//         const vectorResource = folders.value[0].resources.find(
+//           (resource) => resource.layerType === "vector"
+//         );
+//         resourceManagerCall.value.updateResourceVisibility({
+//           ...vectorResource,
+//           visible: true,
+//         });
+//       });
+//     }
+//   },
+//   { immediate: true }
+// );
+
+onMounted(async () => {
+  setTimeout(() => {
+    console.log("Cesium Viewer已初始化完成，开始加载资源...");
+    resourceManagerCall.value = new ResourceManager(
+      "BaseMapSwitcher",
+      folders.value,
+      store.state.cesiumViewer
+    );
+    // 设置矢量图层默认可见
+    const vectorResource = folders.value[0].resources.find(
+      (resource) => resource.layerType === "vector"
+    );
+    resourceManagerCall.value.updateResourceVisibility({
+      ...vectorResource,
+      visible: true,
+    });
+  }, 0);
+});
+
+// 切换底图方法
+function toggleBaseMap(layerType) {
+  const targetResource = folders.value[0].resources.find(
+    (resource) => resource.layerType === layerType
+  );
+  if (!targetResource) {
+    console.error(`找不到对应于${layerType}图层的资源`);
+    return;
+  }
+
+  currentVisibleLayer.value = layerType; // 更新当前显示的图层
+
+  resourceManagerCall.value.updateResourceVisibility({
+    ...targetResource,
+    visible: true,
+  });
+
+  // 隐藏当前可见图层（这里可以简化，因为仅存在两个图层且已知layerCode）
+  const oldVisibleResource = folders.value[0].resources.find(
+    (resource) => resource.layerCode !== targetResource.layerCode
+  );
+  resourceManagerCall.value.updateResourceVisibility({
+    ...oldVisibleResource,
+    visible: false,
+  });
+}
 </script>
 
 <style scoped>
