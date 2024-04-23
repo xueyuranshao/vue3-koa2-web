@@ -21,8 +21,9 @@ const folders = ref([
         layerCode: "37003_sd",
         title: "矢量底图",
         layerUrl:
-          "https://t{s}.tianditu.gov.cn/vec_w/wmts?service=WMTS&request=GetTile&version=1.0.0&LAYER=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=b7d87c30876f4af87ccd40c1abac5634",
-        layerName: "",
+          ["https://t{s}.tianditu.gov.cn/vec_w/wmts?service=WMTS&request=GetTile&version=1.0.0&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&layer=vec",
+          "https://t{s}.tianditu.gov.cn/cva_w/wmts?service=WMTS&request=GetTile&version=1.0.0&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&layer=cva"],
+        layerName: "sl",
         platForm: "tianditu",
         layerType: "vector",
         visible: false,
@@ -33,8 +34,9 @@ const folders = ref([
         layerCode: "37004_sd",
         title: "影像底图",
         layerUrl:
-          "http://t6.tianditu.gov.cn/img_w/wmts?tk=b7d87c30876f4af87ccd40c1abac5634",
-        layerName: "",
+          ["https://t{s}.tianditu.gov.cn/img_w/wmts?service=WMTS&request=GetTile&version=1.0.0&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&layer=img",
+          "https://t{s}.tianditu.gov.cn/cia_w/wmts?service=WMTS&request=GetTile&version=1.0.0&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&layer=cia"],
+        layerName: "yx",
         platForm: "tianditu",
         layerType: "raster",
         visible: false,

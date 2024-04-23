@@ -32,13 +32,14 @@ class LayerLoader {
           break;
       }
     } else if (this.platForm === "tianditu") {
-      switch (this.type) {
-        case 'vector':
-          this.loadTianDiTuVectorLayer();
-          break;
-        case 'raster':
-          break;
-      }
+      this.loadTianDiTuVectorLayer(this.type);
+      // switch (this.type) {
+        // case 'vector':
+        //   this.loadTianDiTuVectorLayer(this.type);
+        //   break;
+        // case 'raster':
+        //   break;
+      // }
     } else {
       console.warn(`Unknown layer type: ${this.type}`);
     }
@@ -64,31 +65,74 @@ class LayerLoader {
     }
   }
   // 新增加载天地图矢量底图的方法
-  loadTianDiTuVectorLayer() {
+  loadTianDiTuVectorLayer(type) {
     debugger
+    this.viewer.imageryLayers.removeAll()
+    const tk = 'd5b0f0ba1b63b838c65918dfeaf53eb7'
     if (this.visible) {
       if (!this.dataSource) {
-        const imageryProvider = new Cesium.WebMapServiceImageryProvider({
-          url: this.url,
-          subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
-          layer: 'vec',
-          style: 'default',
-          format: 'tiles',
-          tileMatrixSetID: 'GoogleMapsCompatible',
-          maximumLevel: 18,
-        });
-
-        const imageryLayer = new Cesium.ImageryLayer(imageryProvider);
-        this.viewer.imageryLayers.add(imageryLayer);
-        this.dataSource = imageryLayer; // 这里把 imageryLayer 当作 dataSource 记录下来，但严格来说它不是一个 DataSource，而是 ImageryLayer
+        switch (type) {
+          case 'vector':
+            //矢量图层
+            const sl = new Cesium.WebMapTileServiceImageryProvider({
+              url: this.url[0] + '&tk=' + tk,
+              subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
+              layer: 'vec',
+              style: 'default',
+              format: 'image/png',
+              tileMatrixSetID: 'GoogleMapsCompatible',
+              maximumLevel: 18,
+            });
+            //矢量注记图层
+            const slzj = new Cesium.WebMapTileServiceImageryProvider({
+              url: this.url[1] + '&tk=' + tk,
+              subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
+              layer: 'cva',
+              style: 'default',
+              format: 'image/png',
+              tileMatrixSetID: 'GoogleMapsCompatible',
+              maximumLevel: 18,
+            });
+    
+            const slLayer = new Cesium.ImageryLayer(sl);
+            const slAnnLayer = new Cesium.ImageryLayer(slzj);
+            this.viewer.imageryLayers.add(slLayer);
+            this.viewer.imageryLayers.add(slAnnLayer);
+            break;
+          case 'raster':
+            //影像图层
+            const yx = new Cesium.WebMapTileServiceImageryProvider({
+              url: this.url[0] + '&tk=' + tk,
+              subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
+              layer: 'img',
+              style: 'default',
+              format: 'image/png',
+              tileMatrixSetID: 'GoogleMapsCompatible',
+              maximumLevel: 18,
+            });
+            //影像注记图层
+            const yxzj = new Cesium.WebMapTileServiceImageryProvider({
+              url: this.url[1] + '&tk=' + tk,
+              subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
+              layer: 'cia',
+              style: 'default',
+              format: 'image/png',
+              tileMatrixSetID: 'GoogleMapsCompatible',
+              maximumLevel: 18,
+            });
+    
+            const yxLayer = new Cesium.ImageryLayer(yx);
+            const yxAnnLayer = new Cesium.ImageryLayer(yxzj);
+            this.viewer.imageryLayers.add(yxLayer);
+            this.viewer.imageryLayers.add(yxAnnLayer);
+            break;
+        
+          default:
+            break;
+        }
       }
-
-      this.viewer.flyToBoundingSphere(this.dataSource.boundingSphere); // 飞向图层的包围球，而不是 flyTo(dataSource)，因为这里 dataSource 是 ImageryLayer
     } else {
-      if (this.dataSource && this.dataSource instanceof Cesium.ImageryLayer) {
-        this.viewer.imageryLayers.remove(this.dataSource);
-        this.dataSource = null;
-      }
+      this.viewer.imageryLayers.removeAll()
     }
   }
 }
